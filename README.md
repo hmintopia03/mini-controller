@@ -32,19 +32,17 @@ The project exposes a simple REST API for inspecting and operating Kubernetes De
 ## Architecture
 
 ```
-Client
-  │
-  ▼
-FastAPI Router
-  │
-  ▼
-Service Layer
-  │
-  ▼
-Kubernetes Client
-  │
-  ▼
-Kubernetes API Server
+User
+ ↓
+Service
+ ↓
+Mini Controller Pod
+ ↓
+ServiceAccount + RBAC
+ ↓
+Kubernetes API
+ ↓
+Deployments / Pods
 ```
 
 ---
@@ -124,6 +122,7 @@ GET /deployments/{name}/pods
 
 ---
 
+
 ## Example
 
 Scale a deployment:
@@ -134,6 +133,53 @@ Invoke-RestMethod `
   -Method Post `
   -ContentType "application/json" `
   -Body '{"replicas":3}'
+```
+
+---
+
+## Kubernetes Deployment
+
+Mini Controller can run inside a Kubernetes cluster and control Kubernetes resources through the Kubernetes API.
+
+### Build image
+
+```bash
+docker build -t mini-controller:0.1.0 .
+```
+
+### Load image into Minikube
+
+```bash
+minikube image load mini-controller:0.1.0
+```
+
+### Deploy
+
+```bash
+kubectl apply -f k8s/mini-controller-rbac.yaml
+kubectl apply -f k8s/mini-controller-deployment.yaml
+kubectl apply -f k8s/mini-controller-service.yaml
+```
+
+### Access Swagger UI
+
+```bash
+kubectl port-forward service/mini-controller 8001:8000
+```
+
+Open: http://localhost:8001/docs
+
+### Verify RBAC
+
+```bash
+kubectl auth can-i list deployments \
+  --as=system:serviceaccount:default:mini-controller
+```
+
+Expected:
+
+```
+yes
 ```
 
 ---
