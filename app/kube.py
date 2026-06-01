@@ -1,11 +1,14 @@
 from fastapi import HTTPException
 from kubernetes import client, config
 from kubernetes.client.exceptions import ApiException
-
+from kubernetes.config.config_exception import ConfigException
 from app.config import NAMESPACE
 
 
-config.load_kube_config()
+try:
+    config.load_incluster_config()
+except ConfigException:
+    config.load_kube_config()
 
 apps = client.AppsV1Api()
 core = client.CoreV1Api()
