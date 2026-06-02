@@ -27,22 +27,47 @@ The project exposes a simple REST API for inspecting and operating Kubernetes De
 - Request validation using Pydantic
 - Kubernetes API error handling
 
+### Control
+
+- List deployments
+- Get deployment details
+- Scale deployments
+- Restart deployments
+- Check rollout status
+
+### Observability
+
+- List pods for a deployment
+- Read pod logs
+- List Kubernetes events
+
+### Kubernetes Runtime
+
+- Runs inside Kubernetes
+- Uses in-cluster configuration
+- Uses ServiceAccount + RBAC
+- Can restart itself through its own API
 ---
 
 ## Architecture
 
 ```
-User
- ↓
-Service
- ↓
+User / Swagger UI
+        |
+        v
+Kubernetes Service
+        |
+        v
 Mini Controller Pod
- ↓
+        |
+        v
 ServiceAccount + RBAC
- ↓
-Kubernetes API
- ↓
-Deployments / Pods
+        |
+        v
+Kubernetes API Server
+        |
+        v
+Deployments / Pods / Logs / Events
 ```
 
 ---

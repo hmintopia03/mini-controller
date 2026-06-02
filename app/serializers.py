@@ -18,3 +18,17 @@ def serialize_pod(pod, namespace: str):
         "node_name": pod.spec.node_name,
         "created_at": pod.metadata.creation_timestamp,
     }
+
+def serialize_event(event, namespace: str):
+    return {
+        "namespace": namespace,
+        "name": event.metadata.name,
+        "type": event.type,
+        "reason": event.reason,
+        "message": event.message,
+        "involved_object_kind": event.involved_object.kind,
+        "involved_object_name": event.involved_object.name,
+        "count": event.count,
+        "first_timestamp": event.first_timestamp,
+        "last_timestamp": event.last_timestamp,
+    }

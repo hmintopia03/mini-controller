@@ -73,3 +73,25 @@ def get_deployment_or_404(name: str, namespace: str = NAMESPACE):
         )
     except ApiException as error:
         handle_kubernetes_error(error)
+
+def get_pod_logs(
+    name: str,
+    namespace: str,
+    tail_lines: int = 100
+):
+    try:
+        return core.read_namespaced_pod_log(
+            name=name,
+            namespace=namespace,
+            tail_lines=tail_lines
+        )
+    except ApiException as error:
+        handle_kubernetes_error(error)
+
+def list_events_in_namespace(namespace: str):
+    try:
+        return core.list_namespaced_event(
+            namespace=namespace
+        )
+    except ApiException as error:
+        handle_kubernetes_error(error)
