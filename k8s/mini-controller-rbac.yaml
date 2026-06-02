@@ -15,27 +15,20 @@ metadata:
 rules:
 - apiGroups: ["apps"]
   resources: ["deployments"]
-  verbs:
-    - get
-    - list
-    - patch
+  verbs: ["get", "list", "patch", "update", "watch"]
 
 - apiGroups: [""]
   resources: ["pods"]
-  verbs:
-    - get
-    - list
+  verbs: ["get", "list", "watch"]
 
 - apiGroups: [""]
   resources: ["pods/log"]
-  verbs:
-    - get
+  verbs: ["get"]
+
 
 - apiGroups: [""]
   resources: ["events"]
-  verbs:
-    - get
-    - list
+  verbs: ["get", "list", "watch"]
 
 --- 
 

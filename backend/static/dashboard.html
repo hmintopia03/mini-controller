@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini Controller Dashboard</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+<header>
+  <h1>Mini Controller</h1>
+  <div>
+    <span id="lastUpdated">Last updated: -</span>
+    <button onclick="refreshAll()">Refresh</button>
+  </div>
+</header>
+
+
+      <section>
+    <h2>Health</h2>
+    <div id="health"></div>
+  </section>
+
+  <section>
+  <h2>Metrics</h2>
+  <div id="metrics"></div>
+</section>
+
+  <section>
+  <h2>Namespace</h2>
+  <select id="namespaceSelect"></select>
+</section>
+
+  <section>
+    <h2>Deployments</h2>
+    <div id="deployments"></div>
+  </section>
+
+  <section>
+    <h2>Events</h2>
+    <div id="events"></div>
+  </section>
+
+  <script src="/static/dashboard.js"></script>
+</body>
+</html>

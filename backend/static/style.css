@@ -1,0 +1,38 @@
+body {
+  font-family: system-ui, sans-serif;
+  margin: 24px;
+  background: #f6f7f9;
+  color: #111;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+section {
+  margin-top: 24px;
+}
+
+.card, .event {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 14px;
+  margin: 10px 0;
+}
+
+button {
+  margin-right: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+pre {
+  background: #111;
+  color: #eee;
+  padding: 10px;
+  overflow-x: auto;
+  max-height: 240px;
+}
