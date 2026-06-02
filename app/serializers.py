@@ -32,3 +32,9 @@ def serialize_event(event, namespace: str):
         "first_timestamp": event.first_timestamp,
         "last_timestamp": event.last_timestamp,
     }
+
+def serialize_namespace(namespace):
+    return {
+        "name": namespace.metadata.name,
+        "status": namespace.status.phase,
+    }

@@ -95,3 +95,9 @@ def list_events_in_namespace(namespace: str):
         )
     except ApiException as error:
         handle_kubernetes_error(error)
+
+def list_namespaces():
+    try:
+        return core.list_namespace()
+    except ApiException as error:
+        handle_kubernetes_error(error)
