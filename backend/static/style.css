@@ -36,3 +36,15 @@ pre {
   overflow-x: auto;
   max-height: 240px;
 }
+
+.event-normal {
+  border-left: 6px solid #999 !important;
+}
+
+.event-warning {
+  border-left: 6px solid #d97706 !important;
+}
+
+.event-error {
+  border-left: 6px solid #dc2626 !important;
+}

@@ -1,4 +1,101 @@
 let namespace = "default";
+let eventSource = null;
+let livePaused = false;
+const seenEventKeys = new Set();
+
+function connectEventStream() {
+  const status = document.getElementById("liveStatus");
+
+  if (eventSource) {
+    eventSource.close();
+  }
+
+  if (namespace !== "default") {
+    status.textContent = "● No access";
+    return;
+  }
+
+  eventSource = new EventSource(
+    `/watch/events?namespace=${namespace}`
+  );
+
+  eventSource.onopen = () => {
+    status.textContent = "● Live";
+  };
+
+  eventSource.onerror = () => {
+    status.textContent = "● Disconnected";
+  };
+
+  eventSource.onmessage = (event) => {
+    if (livePaused) return;
+
+    const payload = JSON.parse(event.data);
+
+    if (payload.watch_type === "ERROR") {
+      status.textContent = "● Watch error";
+      prependEvent({
+        event: {
+          reason: "Watch Error",
+          message: payload.error,
+          type: "Error",
+        },
+      });
+      return;
+    }
+
+    prependEvent(payload);
+  };
+}
+
+function prependEvent(payload) {
+
+  const root = document.getElementById("events");
+  const e = payload.event;
+
+  const key = eventKey(e);
+
+  if (seenEventKeys.has(key)) {
+    return;
+  }
+  seenEventKeys.add(key);
+
+
+  const card = document.createElement("div");
+  card.className = `event event-${(e.type ?? "normal").toLowerCase()}`;
+
+  card.innerHTML = `
+    <strong>${e.reason}</strong>
+    <p>${e.message}</p>
+    <small>${e.type}</small>
+  `;
+
+  root.prepend(card);
+
+  while (root.children.length > 50) {
+    root.removeChild(root.lastChild);
+  }
+}
+
+function toggleLiveEvents() {
+  livePaused = !livePaused;
+
+  const button = document.getElementById("pauseLiveButton");
+  const status = document.getElementById("liveStatus");
+
+  if (livePaused) {
+    button.textContent = "Resume Live";
+    status.textContent = "● Paused";
+    return;
+  }
+
+  button.textContent = "Pause Live";
+  status.textContent = "● Live";
+}
+
+function clearEvents() {
+  document.getElementById("events").innerHTML = "";
+}
 
 async function fetchJson(url, options = {}) {
   const res = await fetch(url, options);
@@ -9,6 +106,16 @@ async function fetchJson(url, options = {}) {
   }
 
   return res.json();
+}
+
+function eventKey(e) {
+  return [
+    e.name ?? "",
+    e.reason ?? "",
+    e.message ?? "",
+    e.last_timestamp ?? "",
+    e.involved_object_name ?? "",
+  ].join("|");
 }
 
 async function loadDeployments() {
@@ -118,8 +225,10 @@ async function loadEvents() {
     const data = await fetchJson(`/events?namespace=${namespace}`);
 
     root.innerHTML = data.events.map((e) => {
+      seenEventKeys.add(eventKey(e));
+
       return `
-        <div class="event">
+        <div class="event event-${(e.type ?? "normal").toLowerCase()}">
           <strong>${e.reason ?? "Event"}</strong>
           <p>${e.message ?? ""}</p>
           <small>${e.type ?? ""} ${e.last_timestamp ?? ""}</small>
@@ -162,6 +271,7 @@ async function loadNamespaces() {
   select.addEventListener("change", async () => {
     namespace = select.value;
     await refreshAll();
+    connectEventStream();
   });
 }
 
@@ -284,11 +394,14 @@ function updateLastUpdated() {
   el.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
 }
 
+
+
 async function init() {
+
   await loadNamespaces();
   await refreshAll();
+  connectEventStream();
 }
-
 init();
 
 setInterval(async () => {

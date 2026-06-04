@@ -15,7 +15,7 @@
 </header>
 
 
-      <section>
+  <section>
     <h2>Health</h2>
     <div id="health"></div>
   </section>
@@ -36,7 +36,14 @@
   </section>
 
   <section>
-    <h2>Events</h2>
+    <h2>
+      Events
+      <span id="liveStatus">● Offline</span>
+    </h2>
+
+    <button id="pauseLiveButton" onclick="toggleLiveEvents()">Pause Live</button>
+    <button onclick="clearEvents()">Clear Events</button>
+
     <div id="events"></div>
   </section>
 

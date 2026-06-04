@@ -8,45 +8,41 @@ The project exposes a simple REST API for inspecting and operating Kubernetes De
 
 ## Features
 
-**Health**
-- API health endpoint
-- Kubernetes connectivity health endpoint
+Health
+✔ API health endpoint
+✔ Kubernetes connectivity health endpoint
 
-**Deployments**
-- List deployments
-- Get deployment details
-- Scale deployments
-- Restart deployments
-- Deployment rollout status
+Deployments
+✔ List deployments
+✔ Get deployment details
+✔ Scale deployments
+✔ Restart deployments
+✔ Deployment rollout status
 
-**Pods**
-- List deployment pods
+Pods
+✔ List deployment pods
+✔ Read pod logs
 
-**Validation**
-- Namespace validation
-- Request validation using Pydantic
-- Kubernetes API error handling
+Events
+✔ List Kubernetes events
+✔ Watch Kubernetes events (SSE)
 
-### Control
+Namespaces
+✔ List namespaces
 
-- List deployments
-- Get deployment details
-- Scale deployments
-- Restart deployments
-- Check rollout status
+Dashboard
+✔ Web dashboard
+✔ Live event feed
+✔ Health panel
+✔ Metrics panel
+✔ Namespace selector
+✔ Deployment actions
 
-### Observability
-
-- List pods for a deployment
-- Read pod logs
-- List Kubernetes events
-
-### Kubernetes Runtime
-
-- Runs inside Kubernetes
-- Uses in-cluster configuration
-- Uses ServiceAccount + RBAC
-- Can restart itself through its own API
+Kubernetes Runtime
+✔ Runs inside Kubernetes
+✔ Uses ServiceAccount + RBAC
+✔ In-cluster configuration
+✔ Real-time event streaming
 ---
 
 ## Architecture
@@ -142,9 +138,23 @@ GET  /deployments/{name}/rollout
 
 ### Pods
 ```
-GET /deployments/{name}/pods
+GET /pods/{name}/logs
 ```
 
+### Events
+```
+GET /events
+```
+
+### Namespaces
+```
+GET /events
+```
+
+### Watch
+```
+GET /watch/events
+```
 ---
 
 
@@ -219,3 +229,9 @@ yes
 - API error handling
 - Layered backend architecture
 - Service layer refactoring
+- Kubernetes Watch API
+- Difference between list and watch operations
+- Server-Sent Events with FastAPI StreamingResponse
+- RBAC verbs for watch permissions
+- Debugging ImagePullBackOff and ErrImagePull events
+- Minikube local image loading workflow
