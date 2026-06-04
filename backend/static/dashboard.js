@@ -3,6 +3,18 @@ let eventSource = null;
 let livePaused = false;
 const seenEventKeys = new Set();
 
+function setLiveStatus(status) {
+  const el = document.getElementById("liveStatus");
+
+  el.className = `live-status ${status}`;
+
+  if (status === "live") el.textContent = "● Live";
+  if (status === "paused") el.textContent = "● Paused";
+  if (status === "disconnected") el.textContent = "● Disconnected";
+  if (status === "error") el.textContent = "● Watch error";
+  if (status === "no-access") el.textContent = "● No access";
+}
+
 function connectEventStream() {
   const status = document.getElementById("liveStatus");
 
@@ -20,11 +32,11 @@ function connectEventStream() {
   );
 
   eventSource.onopen = () => {
-    status.textContent = "● Live";
+    setLiveStatus("live");
   };
 
   eventSource.onerror = () => {
-    status.textContent = "● Disconnected";
+    setLiveStatus("disconnected");
   };
 
   eventSource.onmessage = (event) => {
@@ -85,12 +97,12 @@ function toggleLiveEvents() {
 
   if (livePaused) {
     button.textContent = "Resume Live";
-    status.textContent = "● Paused";
+    setLiveStatus("paused");
     return;
   }
 
   button.textContent = "Pause Live";
-  status.textContent = "● Live";
+  setLiveStatus("live");
 }
 
 function clearEvents() {
@@ -118,42 +130,53 @@ function eventKey(e) {
   ].join("|");
 }
 
-async function loadDeployments() {
-  const root = document.getElementById("deployments");
-
-  try {
-    const data = await fetchJson(
-      `/deployments?namespace=${namespace}`
-    );
-  root.innerHTML = data.deployments.map((d) => {
-    return `
-      <div class="card">
-        <h3>${d.name}</h3>
-        <p>Namespace: ${d.namespace}</p>
-        <p>Replicas: ${d.ready_replicas ?? 0} / ${d.replicas ?? 0}</p>
-        <p>Image: ${d.image ?? "-"}</p>
-
-        <button onclick="loadDeploymentDetail('${d.name}')">Detail</button>
-        <button onclick="scaleDeployment('${d.name}')">Scale</button>
-        <button onclick="restartDeployment('${d.name}')">Restart</button>
-        <button onclick="loadPods('${d.name}')">Pods</button>
-        <button onclick="loadRollout('${d.name}')">Rollout</button>
-
-        <pre id="detail-${d.name}"></pre>
-      </div>
-    `;
-  }).join("");
-} catch (err) {
-
-    root.innerHTML = `
-      <div class="card">
-        <h3>Cannot access namespace</h3>
-        <p>${namespace}</p>
-        <pre>${err.message}</pre>
-      </div>
-    `;
-  }
+function getDeploymentStatus(dep) {
+  if (dep.ready_replicas === dep.replicas && dep.replicas > 0) return "healthy";
+  if (dep.ready_replicas === 0 && dep.replicas > 0) return "error";
+  if (dep.ready_replicas < dep.replicas) return "warning";
+  if (dep.replicas === 0) return "scaled-zero";
+  return "unknown";
 }
+
+function getPodStatus(pod) {
+  const phase = pod.phase;
+
+  if (phase === "Running") return "running";
+  if (phase === "Pending") return "pending";
+  if (phase === "Succeeded") return "succeeded";
+  if (phase === "Failed") return "failed";
+  if (phase === "Unknown") return "unknown";
+
+  return "unknown";
+}
+
+function getDeploymentStatus(d) {
+  const replicas = d.replicas ?? 0;
+  const ready = d.ready_replicas ?? 0;
+
+  if (replicas === 0) return "scaled-zero";
+  if (ready === replicas) return "healthy";
+  if (ready === 0) return "error";
+
+  return "warning";
+}
+
+function getPodStatus(pod) {
+  const phase = pod.phase;
+
+  if (phase === "Running") return "running";
+  if (phase === "Pending") return "pending";
+  if (phase === "Succeeded") return "succeeded";
+  if (phase === "Failed") return "failed";
+  if (phase === "Unknown") return "unknown";
+
+  return "unknown";
+}
+
+function statusBadge(status) {
+  return `<span class="status-badge status-${status}">${status}</span>`;
+}
+
 
 async function loadDeploymentDetail(deploymentName) {
   const data = await fetchJson(
@@ -300,6 +323,64 @@ async function loadHealth() {
   }
 }
 
+async function loadDeployments() {
+  const root = document.getElementById("deployments");
+
+  try {
+    const data = await fetchJson(
+      `/deployments?namespace=${namespace}`
+    );
+
+    root.innerHTML = data.deployments.map((d) => {
+      const status = getDeploymentStatus(d);
+
+      return `
+        <div class="card">
+          <div class="deployment-header">
+            <h3>${d.name}</h3>
+            ${statusBadge(status)}
+          </div>
+
+          <p>Namespace: ${d.namespace}</p>
+          <p>Replicas: ${d.ready_replicas ?? 0} / ${d.replicas ?? 0}</p>
+          <p>Image: ${d.image ?? "-"}</p>
+
+          <button onclick="loadDeploymentDetail('${d.name}')">
+            Detail
+          </button>
+
+          <button onclick="scaleDeployment('${d.name}')">
+            Scale
+          </button>
+
+          <button onclick="restartDeployment('${d.name}')">
+            Restart
+          </button>
+
+          <button onclick="loadPods('${d.name}')">
+            Pods
+          </button>
+
+          <button onclick="loadRollout('${d.name}')">
+            Rollout
+          </button>
+
+          <div id="detail-${d.name}" class="deployment-detail"></div>
+        </div>
+      `;
+    }).join("");
+
+  } catch (err) {
+    root.innerHTML = `
+      <div class="card">
+        <h3>Cannot access namespace</h3>
+        <p>${namespace}</p>
+        <pre>${err.message}</pre>
+      </div>
+    `;
+  }
+}
+
 async function loadPods(deploymentName) {
   const pods = await fetchJson(
     `/deployments/${deploymentName}/pods?namespace=${namespace}`
@@ -308,16 +389,24 @@ async function loadPods(deploymentName) {
   const detail = document.getElementById(`detail-${deploymentName}`);
 
   detail.innerHTML = pods.map((p) => {
-    return `
-Pod: ${p.name}
-Phase: ${p.phase}
-Ready: ${p.ready}
-Restarts: ${p.restart_count ?? "-"}
-Node: ${p.node_name ?? "-"}
+    const status = getPodStatus(p);
 
-<button onclick="loadPodLogs('${deploymentName}', '${p.name}')">Logs</button>
-`;
-  }).join("\n\n---\n\n");
+    return `
+      <div class="pod-card">
+        <div class="pod-header">
+          <span>Pod: ${p.name}</span>
+          ${statusBadge(status)}
+        </div>
+        <div class="pod-meta">
+          <div>Phase: ${p.phase}</div>
+          <div>Ready: ${p.ready ?? "-"}</div>
+          <div>Restarts: ${p.restart_count ?? "-"}</div>
+          <div>Node: ${p.node_name ?? "-"}</div>
+        </div>
+        <button class="logs-button" onclick="loadPodLogs('${deploymentName}', '${p.name}')">Logs</button>
+      </div>
+    `;
+  }).join("");
 }
 
 async function loadRollout(deploymentName) {
@@ -371,12 +460,27 @@ async function loadMetrics() {
     const events = eventsData.events ?? [];
     const namespaces = namespacesData ?? [];
 
+
+    const deploymentStatuses = deployments.map(getDeploymentStatus);
+
+    const healthyCount = deploymentStatuses.filter((s) => s === "healthy").length;
+    const warningCount = deploymentStatuses.filter((s) => s === "warning").length;
+    const errorCount = deploymentStatuses.filter((s) => s === "error").length;
+    const scaledZeroCount = deploymentStatuses.filter((s) => s === "scaled-zero").length;
+
     root.innerHTML = `
       <div class="card">
         <p>Current namespace: ${namespace}</p>
         <p>Namespaces: ${namespaces.length}</p>
         <p>Deployments: ${deployments.length}</p>
         <p>Events: ${events.length}</p>
+
+        <hr>
+
+        <p>Healthy Deployments: ${healthyCount}</p>
+        <p>Warning Deployments: ${warningCount}</p>
+        <p>Failed Deployments: ${errorCount}</p>
+        <p>Scaled Zero: ${scaledZeroCount}</p>
       </div>
     `;
   } catch (err) {
@@ -402,13 +506,17 @@ async function init() {
   await refreshAll();
   connectEventStream();
 }
+
 init();
 
 setInterval(async () => {
   if (namespace !== "default") return;
 
   try {
-    await refreshAll();
+    await loadHealth();
+    await loadMetrics();
+    await loadEvents();
+    updateLastUpdated();
   } catch (err) {
     console.error("Auto refresh failed:", err);
   }
