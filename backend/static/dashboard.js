@@ -346,40 +346,41 @@ async function loadDeployments() {
     root.innerHTML = data.deployments.map((d) => {
       const status = getDeploymentStatus(d);
 
-      return `
-        <div class="card">
-          <div class="deployment-header">
-            <h3>${d.name}</h3>
-            ${statusBadge(status)}
-          </div>
+  return `
+    <div class="card deployment-card">
+      <div class="deployment-header">
+        <h3>${d.name}</h3>
+        ${statusBadge(status)}
+      </div>
 
-          <p>Namespace: ${d.namespace}</p>
-          <p>Replicas: ${d.ready_replicas ?? 0} / ${d.replicas ?? 0}</p>
-          <p>Image: ${d.image ?? "-"}</p>
-
-          <button onclick="loadDeploymentDetail('${d.name}')">
-            Detail
-          </button>
-
-          <button onclick="scaleDeployment('${d.name}')">
-            Scale
-          </button>
-
-          <button onclick="restartDeployment('${d.name}')">
-            Restart
-          </button>
-
-          <button onclick="loadPods('${d.name}')">
-            Pods
-          </button>
-
-          <button onclick="loadRollout('${d.name}')">
-            Rollout
-          </button>
-
-          <div id="detail-${d.name}" class="deployment-detail"></div>
+      <div class="deployment-meta">
+        <div>
+          <span>Ready</span>
+          <strong>${d.ready_replicas ?? 0} / ${d.replicas ?? 0}</strong>
         </div>
-      `;
+
+        <div>
+          <span>Namespace</span>
+          <strong>${d.namespace}</strong>
+        </div>
+
+        <div>
+          <span>Image</span>
+          <strong>${d.image ?? "-"}</strong>
+        </div>
+      </div>
+
+      <div class="deployment-actions">
+        <button onclick="loadDeploymentDetail('${d.name}')">Detail</button>
+        <button onclick="scaleDeployment('${d.name}')">Scale</button>
+        <button onclick="restartDeployment('${d.name}')">Restart</button>
+        <button onclick="loadPods('${d.name}')">Pods</button>
+        <button onclick="loadRollout('${d.name}')">Rollout</button>
+      </div>
+
+      <div id="detail-${d.name}" class="deployment-detail"></div>
+    </div>
+  `;
     }).join("");
 
   } catch (err) {
@@ -489,22 +490,22 @@ async function loadMetrics() {
         <hr>
 
         <div class="summary-grid">
-          <div class="summary-item">
+          <div class="summary-item" id="summary-healthy">
             <strong>${healthyCount}</strong>
             <span>Ready</span>
           </div>
 
-          <div class="summary-item">
+          <div class="summary-item" id="summary-warning">
             <strong>${warningCount}</strong>
             <span>Warning</span>
           </div>
 
-          <div class="summary-item">
+          <div class="summary-item" id="summary-error ">
             <strong>${errorCount}</strong>
             <span>Not Ready</span>
           </div>
 
-          <div class="summary-item">
+          <div class="summary-item id="summary-scaled-zero">
             <strong>${scaledZeroCount}</strong>
             <span>Scaled Zero</span>
           </div>

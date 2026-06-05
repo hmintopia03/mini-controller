@@ -1,3 +1,8 @@
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-green)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-Operations-blue)
+![Status](https://img.shields.io/badge/Version-v1.0-success)
+
 # Mini Controller
 
 Mini Controller is a lightweight Kubernetes Operations Dashboard built with FastAPI and the Kubernetes Python Client.
@@ -60,29 +65,37 @@ It provides deployment management, pod inspection, rollout monitoring, RBAC-secu
 * ✔ Deployment restart
 * ✔ Rollout monitoring
 * ✔ Real-time event streaming
+* ✔ Automatic SSE reconnection
+
+---
+
+## Screenshots
+
+### Dashboard
+
+![dashboard](dashboard.png)
 
 ---
 
 ## Architecture
 
+```mermaid
+flowchart TD
+    User[User] --> Dashboard[Dashboard<br/>HTML / CSS / JavaScript]
+    Dashboard --> FastAPI[FastAPI Application]
+    FastAPI --> KubeClient[Kubernetes Python Client]
+    KubeClient --> APIServer[Kubernetes API Server]
+
+    APIServer --> Deployments[Deployments]
+    APIServer --> Pods[Pods]
+    APIServer --> Events[Events]
+    APIServer --> Namespaces[Namespaces]
+
+    Events --> Watch[Watch API]
+    Watch --> SSE[Server-Sent Events]
+    SSE --> Dashboard
 ```
-User / Swagger UI
-        |
-        v
-Kubernetes Service
-        |
-        v
-Mini Controller Pod
-        |
-        v
-ServiceAccount + RBAC
-        |
-        v
-Kubernetes API Server
-        |
-        v
-Deployments / Pods / Logs / Events
-```
+The dashboard runs inside Kubernetes and communicates with the Kubernetes API Server through the Kubernetes Python Client using a ServiceAccount and RBAC permissions.
 
 ---
 
@@ -99,7 +112,11 @@ mini-controller/
     ├── services.py
     └── routers/
         ├── health.py
-        └── deployments.py
+        ├── deployments.py
+        ├── pods.py
+        ├── events.py
+        ├── namespaces.py
+        └── watch.py
 ```
 
 ---
@@ -156,6 +173,7 @@ GET  /deployments/{name}/rollout
 
 ### Pods
 ```
+GET /deployments/{name}/pods
 GET /pods/{name}/logs
 ```
 
@@ -166,7 +184,7 @@ GET /events
 
 ### Namespaces
 ```
-GET /events
+GET /namespaces
 ```
 
 ### Watch
@@ -247,9 +265,14 @@ yes
 - API error handling
 - Layered backend architecture
 - Service layer refactoring
-- Kubernetes Watch API
 - Difference between list and watch operations
 - Server-Sent Events with FastAPI StreamingResponse
 - RBAC verbs for watch permissions
 - Debugging ImagePullBackOff and ErrImagePull events
 - Minikube local image loading workflow
+- Kubernetes RBAC and ServiceAccounts
+- Kubernetes Watch API
+- Server-Sent Events (SSE)
+- Deployment lifecycle management
+- In-cluster Kubernetes applications
+- Real-time operations dashboard design

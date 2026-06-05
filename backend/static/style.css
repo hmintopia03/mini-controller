@@ -22,6 +22,22 @@ section {
   padding: 14px;
   margin: 10px 0;
 }
+.event {
+  padding: 12px;
+}
+
+.event h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+}
+
+.event p {
+  margin: 4px 0;
+}
+
+.event small {
+  color: #666;
+}
 
 button {
   margin-right: 8px;
@@ -191,4 +207,53 @@ pre {
 .summary-item span {
   font-size: 13px;
   color: #6b7280;
+}
+
+#summary-healthy { color: #16a34a; }
+#summary-warning { color: #d97706; }
+#summary-error { color: #dc2626; }
+#summary-scaled-zero { color: #6b7280; }
+
+#events {
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-top: 10px;
+}
+.deployment-card {
+  padding: 16px;
+}
+
+.deployment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 12px 0;
+}
+
+.deployment-meta div {
+  min-width: 110px;
+}
+
+.deployment-meta span {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.deployment-meta strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.deployment-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.deployment-actions button {
+  font-size: 13px;
+  padding: 6px 10px;
 }
