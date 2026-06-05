@@ -43,8 +43,9 @@ Kubernetes Runtime
 ✔ Uses ServiceAccount + RBAC
 ✔ In-cluster configuration
 ✔ Real-time event streaming
+```
 ---
-
+```
 ## Architecture
 
 ```

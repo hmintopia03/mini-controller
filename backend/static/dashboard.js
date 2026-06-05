@@ -17,6 +17,12 @@ function setLiveStatus(status) {
 
 function connectEventStream() {
   const status = document.getElementById("liveStatus");
+  let reconnectTimer = null;
+
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+  }
 
   if (eventSource) {
     eventSource.close();
@@ -37,6 +43,12 @@ function connectEventStream() {
 
   eventSource.onerror = () => {
     setLiveStatus("disconnected");
+
+    eventSource.close();
+
+    reconnectTimer = setTimeout(() => {
+      connectEventStream();
+    }, 3000);
   };
 
   eventSource.onmessage = (event) => {
@@ -460,7 +472,6 @@ async function loadMetrics() {
     const events = eventsData.events ?? [];
     const namespaces = namespacesData ?? [];
 
-
     const deploymentStatuses = deployments.map(getDeploymentStatus);
 
     const healthyCount = deploymentStatuses.filter((s) => s === "healthy").length;
@@ -477,10 +488,27 @@ async function loadMetrics() {
 
         <hr>
 
-        <p>Healthy Deployments: ${healthyCount}</p>
-        <p>Warning Deployments: ${warningCount}</p>
-        <p>Failed Deployments: ${errorCount}</p>
-        <p>Scaled Zero: ${scaledZeroCount}</p>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <strong>${healthyCount}</strong>
+            <span>Ready</span>
+          </div>
+
+          <div class="summary-item">
+            <strong>${warningCount}</strong>
+            <span>Warning</span>
+          </div>
+
+          <div class="summary-item">
+            <strong>${errorCount}</strong>
+            <span>Not Ready</span>
+          </div>
+
+          <div class="summary-item">
+            <strong>${scaledZeroCount}</strong>
+            <span>Scaled Zero</span>
+          </div>
+        </div>
       </div>
     `;
   } catch (err) {
