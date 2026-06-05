@@ -69,14 +69,6 @@ It provides deployment management, pod inspection, rollout monitoring, RBAC-secu
 
 ---
 
-## Screenshots
-
-### Dashboard
-
-![dashboard](dashboard.png)
-
----
-
 ## Architecture
 
 ```mermaid
@@ -96,6 +88,19 @@ flowchart TD
     SSE --> Dashboard
 ```
 The dashboard runs inside Kubernetes and communicates with the Kubernetes API Server through the Kubernetes Python Client using a ServiceAccount and RBAC permissions.
+
+---
+
+
+## Screenshots
+
+### Dashboard
+
+![dashboard](dashboard.png)
+
+### Live Events
+
+![events](events.png)
 
 ---
 
