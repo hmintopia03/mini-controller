@@ -41,15 +41,21 @@ function connectEventStream() {
     setLiveStatus("live");
   };
 
-  eventSource.onerror = () => {
-    setLiveStatus("disconnected");
+eventSource.onerror = () => {
+  setLiveStatus("disconnected");
 
+  if (eventSource) {
     eventSource.close();
+    eventSource = null;
+  }
 
+  if (!reconnectTimer) {
     reconnectTimer = setTimeout(() => {
+      reconnectTimer = null;
       connectEventStream();
     }, 3000);
-  };
+  }
+};
 
   eventSource.onmessage = (event) => {
     if (livePaused) return;
