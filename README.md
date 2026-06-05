@@ -5,55 +5,61 @@ Mini Controller is a lightweight Kubernetes Operations Dashboard built with Fast
 It provides deployment management, pod inspection, rollout monitoring, RBAC-secured cluster access, and real-time Kubernetes event streaming via Server-Sent Events (SSE).
 
 ---
-
 ## Features
 
-Health
-✔ API health endpoint
-✔ Kubernetes connectivity health endpoint
+### Health
 
-Deployments
-✔ List deployments
-✔ Get deployment details
-✔ Scale deployments
-✔ Restart deployments
-✔ Deployment rollout status
+* ✔ API health endpoint
+* ✔ Kubernetes connectivity health endpoint
 
-Pods
-✔ List deployment pods
-✔ Read pod logs
+### Deployments
 
-Events
-✔ List Kubernetes events
-✔ Watch Kubernetes events (SSE)
-✔ Event deduplication
-✔ Real-time event updates
+* ✔ List deployments
+* ✔ Get deployment details
+* ✔ Scale deployments
+* ✔ Restart deployments
+* ✔ Deployment rollout status
 
-Namespaces
-✔ List namespaces
+### Pods
 
-Dashboard
-✔ Web dashboard
-✔ Live event feed
-✔ Health panel
-✔ Metrics panel
-✔ Namespace selector
-✔ Deployment actions
-✔ Deployment status badges
-✔ Pod status badges
-✔ Cluster summary panel
-✔ Event deduplication
-✔ Manual refresh
-✔ Pause live events
+* ✔ List deployment pods
+* ✔ Read pod logs
 
-Kubernetes Operations
-✔ Runs inside Kubernetes
-✔ Uses ServiceAccount + RBAC
-✔ In-cluster configuration
-✔ Deployment scaling
-✔ Deployment restart
-✔ Rollout monitoring
-✔ Real-time event streaming
+### Events
+
+* ✔ List Kubernetes events
+* ✔ Watch Kubernetes events (SSE)
+* ✔ Event deduplication
+* ✔ Real-time event updates
+
+### Namespaces
+
+* ✔ List namespaces
+
+### Dashboard
+
+* ✔ Web dashboard
+* ✔ Live event feed
+* ✔ Health panel
+* ✔ Metrics panel
+* ✔ Namespace selector
+* ✔ Deployment actions
+* ✔ Deployment status badges
+* ✔ Pod status badges
+* ✔ Cluster summary panel
+* ✔ Event deduplication
+* ✔ Manual refresh
+* ✔ Pause live events
+
+### Kubernetes Operations
+
+* ✔ Runs inside Kubernetes
+* ✔ Uses ServiceAccount + RBAC
+* ✔ In-cluster configuration
+* ✔ Deployment scaling
+* ✔ Deployment restart
+* ✔ Rollout monitoring
+* ✔ Real-time event streaming
 
 ---
 
