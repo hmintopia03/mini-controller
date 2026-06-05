@@ -1,8 +1,8 @@
 # Mini Controller
 
-A lightweight Kubernetes deployment controller built with FastAPI and the Kubernetes Python client.
+Mini Controller is a lightweight Kubernetes Operations Dashboard built with FastAPI and the Kubernetes Python Client.
 
-The project exposes a simple REST API for inspecting and operating Kubernetes Deployments without using `kubectl` directly.
+It provides deployment management, pod inspection, rollout monitoring, RBAC-secured cluster access, and real-time Kubernetes event streaming via Server-Sent Events (SSE).
 
 ---
 
@@ -26,6 +26,8 @@ Pods
 Events
 ✔ List Kubernetes events
 ✔ Watch Kubernetes events (SSE)
+✔ Event deduplication
+✔ Real-time event updates
 
 Namespaces
 ✔ List namespaces
@@ -37,15 +39,24 @@ Dashboard
 ✔ Metrics panel
 ✔ Namespace selector
 ✔ Deployment actions
+✔ Deployment status badges
+✔ Pod status badges
+✔ Cluster summary panel
+✔ Event deduplication
+✔ Manual refresh
+✔ Pause live events
 
-Kubernetes Runtime
+Kubernetes Operations
 ✔ Runs inside Kubernetes
 ✔ Uses ServiceAccount + RBAC
 ✔ In-cluster configuration
+✔ Deployment scaling
+✔ Deployment restart
+✔ Rollout monitoring
 ✔ Real-time event streaming
-```
+
 ---
-```
+
 ## Architecture
 
 ```
